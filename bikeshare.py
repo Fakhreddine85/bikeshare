@@ -17,16 +17,23 @@ def get_filters():
     """
     print('Hello! Let\'s explore some US bikeshare data!')
     # TO DO: get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
-    #city=''
-    
-    city = input('please enter a valid city name:')
+    city=''
+    while city not in CITY_DATA:
+        city = input('please enter a valid city name:').lower()
     
 
     # TO DO: get user input for month (all, january, february, ... , june)
-    month = input('please enter a valid month:')
+    months = {'january': 1, 'february': 2, 'march': 3, 'april': 4, 'may': 5, 'june': 6, 'all': 7}
+    month=''
+    while month not in months:
+        month = input('please enter a valid month:').lower()
+    
 
     # TO DO: get user input for day of week (all, monday, tuesday, ... sunday)
-    day = input('please enter a valid day of week:')
+    days = ['all', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    day=''
+    while day not in days:
+        day = input('please enter a valid day of week:').lower()
 
     print('-'*40)
     return city, month, day
@@ -48,10 +55,10 @@ def load_data(city, month, day):
 
     # convert the Start Time column to datetime
     df['Start Time'] = pd.to_datetime(df['Start Time'])
-
+    #print(df)
     # extract month and day of week from Start Time to create new columns
     df['month'] = df['Start Time'].dt.month
-    df['day_of_week'] = df['Start Time'].dt.weekday_name
+    df['day_of_week'] = df['Start Time'].dt.day_name()
 
     # filter by month if S
     if month != 'all':
@@ -61,13 +68,14 @@ def load_data(city, month, day):
 
         # filter by month to create the new dataframe
         df = df[df['month'] == month]
-
+        print(df)
     # filter by day of week if applicable
     if day != 'all':
         # filter by day of week to create the new dataframe
+        print (day.title())
         df = df[df['day_of_week'] == day.title()]
-
-
+        print(df)
+    #print(df)
     return df
 
 
@@ -76,9 +84,9 @@ def time_stats(df):
 
     print('\nCalculating The Most Frequent Times of Travel...\n')
     start_time = time.time()
-
+    print (df['month'])
     # TO DO: display the most common month
-    print('the most common month is:'+str(df['month'].mode()[0]))
+    print('the most common month is:'+ str(df['month'].mode()[0]))
 
     # TO DO: display the most common day of week
     print('the most common day of week is:'+df['day_of_week'].mode()[0])
@@ -106,7 +114,8 @@ def station_stats(df):
     print('the most used end station is:'+df['End Station'].mode()[0])
 
     # TO DO: display most frequent combination of start station and end station trip
-    
+    df['Start To End'] = df['Start Station'].str.cat(df['End Station'], sep=' to ')
+    print("The most frequent combination of trips are from ."+df['Start To End'].mode()[0])
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -138,10 +147,15 @@ def user_stats(df):
     print('counts of user types: '+str(df['User Type'].value_counts()))
 
     # TO DO: Display counts of gender
-    print('counts of gender: '+str(df['Gender'].value_counts()))
-
+    if 'Gender' in df:
+        print('counts of gender: '+str(df['Gender'].value_counts()))
+    else:
+        print('Gender stats cannot be calculated because Gender does not appear in the dataframe')
     # TO DO: Display earliest, most recent, and most common year of birth
-    print('the most common year of birth is: '+str(df['Birth Year'].mode()[0]))
+    if 'Birth Year' in df:
+        print('the most common year of birth is: '+str(df['Birth Year'].mode()[0]))
+    else:
+        print('Birth Year stats cannot be calculated because Birth Year does not appear in the dataframe')
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
