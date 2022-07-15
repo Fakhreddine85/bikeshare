@@ -160,12 +160,36 @@ def user_stats(df):
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
 
-
+def display_row(df):
+    response = ['yes','no']
+    row_data = ''
+    counter = 0
+    while row_data not in response:
+        print("\nDo you wish to view the raw data?")
+        print("\nAccepted responses:\nyes or no")
+        row_data = input().lower()
+        #the raw data from the df is displayed if user opts for it
+        if row_data == "yes":
+            print(df.head())
+        elif row_data not in response:
+            print("\nPlease check your input.")
+            print("Input does not seem to match any of the accepted responses.")
+            print("\nRestarting...\n")
+    while row_data == 'yes':
+        print("Do you wish to view more raw data?")
+        counter += 5
+        row_data = input().lower()
+        #If user opts for it, this displays next 5 rows of data
+        if row_data == "yes":
+             print(df[counter:counter+5])
+        elif row_data != "yes":
+             break
+    print('-'*80)
 def main():
     while True:
         city, month, day = get_filters()
         df = load_data(city, month, day)
-
+        display_row(df)
         time_stats(df)
         station_stats(df)
         trip_duration_stats(df)
